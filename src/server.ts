@@ -8,11 +8,6 @@ let path = require('path');
 
 /**
  * @author Cathal Butler
- * https://docs.w3cub.com/dom/webrtc_api/signaling_and_video_calling/
- * https://www.tutorialspoint.com/webrtc/webrtc_signaling.htm
- * https://www.w3.org/TR/webrtc/#offer-answer-options
- * https://codelabs.developers.google.com/codelabs/webrtc-web/#0
- * https://testrtc.com/webrtc-api-trace/ : WEBRTC DEBUGGER
 */
 
 let connectionArray = [];
@@ -21,13 +16,6 @@ let connectionArray = [];
 function log(text) {
     let time = new Date();
     console.log("[" + time.toLocaleTimeString() + "] " + text);
-}
-
-// If you want to implement support for blocking specific origins, this is
-// where you do it. Just return false to refuse WebSocket connections given
-// the specified origin.
-function originIsAllowed(origin) {
-    return true; // We will accept all connections
 }
 
 
@@ -87,17 +75,6 @@ function sendPeerListToAll() {
     }
 }
 
-/**
- * HTTP Server, this server just display a message. It is used with a WebSocket for WebRTC
- * @param request, incoming requests
- * @param response, response message
- */
-// let httpsServer = http.createServer(function (request, response) {
-//     log("Received secure request for " + request.url);
-//     response.write("WebSocket Server - Vertex");
-//     response.end();
-// });
-
 // Load the key and certificate data to be used for our HTTPS/WSS
 // server.
 //
@@ -133,12 +110,6 @@ let wsServer = new WebSocketServer({
 // called whenever a user connects to the server's port using the
 // WebSocket protocol.
 wsServer.on('request', function (request) {
-    if (!originIsAllowed(request.origin)) {
-        request.reject();
-        log("Connection from " + request.origin + " rejected.");
-        return;
-    }
-
     // Connection
     let connection = request.accept();
     // Add the new connection to our list of connections.
@@ -174,9 +145,10 @@ wsServer.on('request', function (request) {
                     break;
                 case 'offer': //Fallthrough
                 case 'answer': //Fallthrough
-                case 'candidate': //Fallthrough
+                case 'candidate':
                     // Convert to an object to send:
                     // Check that a id exists in the request sent from a client:
+                    // @ts-ignore
                     if (requestMsg.data.to && requestMsg.data.to.length !== 0) {
                         await sendToPeer(requestMsg.data.to, msgString);
                     } else {
